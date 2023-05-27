@@ -6,13 +6,13 @@
 /*   By: mkiflema <mkiflema@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/21 16:09:33 by marvin            #+#    #+#             */
-/*   Updated: 2023/04/24 17:59:05 by mkiflema         ###   ########.fr       */
+/*   Updated: 2023/05/20 12:51:12 by mkiflema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int ft_atoi(char *str)
+int	ft_atoi(char *str)
 {
 	int i;
 	int sign;
