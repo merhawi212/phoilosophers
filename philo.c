@@ -22,6 +22,7 @@ void	destroy_mutex(t_info *info)
 		pthread_mutex_destroy(&info->fork_locker[i]);
 	free(info->forks);
 	free(info->fork_locker);
+	free(info->philo);
 }
 
 void	feed_philo(t_info *info, char **argv, int philo_num)
@@ -33,11 +34,14 @@ void	feed_philo(t_info *info, char **argv, int philo_num)
 	info->time_to_eat = ft_atoi(argv[3]);
 	info->time_to_sleep = ft_atoi(argv[4]);
 	info->dead = 0;
+	info->flag = 1;
 	i = -1;
 	current_time = get_time();
 	while (++i < info->philo_num)
 	{
 		info->philo[i].id = i;
+		info->philo[i].left = i;
+		info->philo[i].right = (i + 1) % info->philo_num;
 		info->philo[i].last_eat_time = current_time;
 
 	}
@@ -54,6 +58,26 @@ int	create_philos(t_info *info, char **argv, int philo_num)
 	feed_philo(info, argv, philo_num);
 	return (TRUE);
 }
+
+// void	*routine_one(void *info)
+// {
+// 	t_info	*inf;
+
+// 	inf = (t_info *)info;
+// }
+
+// void 	only_one_philo(t_info *info)
+// {
+// 	info->p_th = malloc(sizeof(pthread_t) * info->philo_num + 1);
+// 	if (!info->p_th)
+// 		return (FALSE);
+// 	info->n_thread = 0;
+// 	if (pthread_create(&info->p_th[0], NULL, &routine_one, (void *)info) != 0)
+// 		return (FALSE);
+// 	while (info->dead == 0)
+// 		wating_time(1);
+	
+// }
 
 int	main(int argc, char **argv)
 {

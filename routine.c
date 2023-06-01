@@ -6,53 +6,79 @@
 /*   By: mkiflema <mkiflema@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/12 20:23:33 by mkiflema          #+#    #+#             */
-/*   Updated: 2023/05/27 13:27:18 by mkiflema         ###   ########.fr       */
+/*   Updated: 2023/06/01 22:08:31 by mkiflema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
-void	pick_up_fork(t_info *info, int i)
+#include <string.h>
+void static display_mesg(t_info *info, int i, char *str)
 {
-	int	left;
-	int	right;
+	pthread_mutex_lock(&info->print);
+	if (info->dead == 0)
+		printf(" %lld Philo %d %s\n", get_time() - info->start_time, i + 1, str);
+	// else if (!strcmp("is died", str))
+	// 	printf(" %lld Philo %d %s\n", get_time() - info->start_time, i + 1, str);
+	pthread_mutex_unlock(&info->print);
+}
 
-	left = i;
-	right = (i + 1) % info->philo_num;
+
+void	pick_up_even(t_info *info, int i)
+{
 	while (info->dead == 0)
 	{
-		if (info->forks[left] == 0 && info->forks[right] == 0)
+		if (info->forks[info->philo[i].left] == 0 && info->forks[info->philo[i].right] == 0)
 		{
-			pthread_mutex_lock(&info->fork_locker[left]);
-			pthread_mutex_lock(&info->fork_locker[right]);
-			info->forks[left] = 1;
-			info->forks[right] = 1;
-			printf("Philo %d has taken fork %d (left)"
-			"and %d (right)\n", i + 1, left + 1, right + 1);
-			printf("Philo %d is eating😋\n", i + 1);
-			wating_time(info->time_to_sleep);
+			pthread_mutex_lock(&info->fork_locker[info->philo[i].right]);
+			pthread_mutex_lock(&info->fork_locker[info->philo[i].left]);
+			info->forks[info->philo[i].left] = 1;
+			info->forks[info->philo[i].right] = 1;
+			display_mesg(info, info->philo[i].left, "has taken the forks");
+			display_mesg(info, info->philo[i].left, "is eating");
+			info->philo[i].last_eat_time = get_time();
+			wating_time(info->time_to_eat);
 			break;
 		}
 	}
 }
 
+void	pick_up_fork(t_info *info, int i)
+{
+	if (i % 2 == 0)
+		pick_up_even(info, i);
+	else 
+	{
+		while (info->dead == 0)
+		{
+			if (info->forks[info->philo[i].left] == 0 && info->forks[info->philo[i].right] == 0)
+			{
+				pthread_mutex_lock(&info->fork_locker[info->philo[i].left]);
+				pthread_mutex_lock(&info->fork_locker[info->philo[i].right]);
+				info->forks[info->philo[i].left] = 1;
+				info->forks[info->philo[i].right] = 1;
+				display_mesg(info, info->philo[i].left, "has taken the forks");
+				display_mesg(info, info->philo[i].left, "is eating");
+				info->philo[i].last_eat_time = get_time();
+				wating_time(info->time_to_eat);
+				break;
+			}
+		}
+	}
+}
+
+
 void	put_down_fork(t_info *info, int i)
 {
-	int	left;
-	int	right;
 
-	left = i;
-	right = (i + 1) % info->philo_num;
 	while (info->dead == 0)
 	{
-		if (info->forks[left] == 1 && info->forks[right] == 1)
+		if (info->forks[info->philo[i].left] == 1 && info->forks[info->philo[i].right] == 1)
 		{
-			info->forks[left] = 0;
-			info->forks[right] = 0;
-			info->philo[i].last_eat_time = get_time();
-			pthread_mutex_unlock(&info->fork_locker[left]);
-			printf("Philo %d has released fork %d and %d \n", i + 1, left + 1, right + 1);
-			pthread_mutex_unlock(&info->fork_locker[right]);
+			info->forks[info->philo[i].left] = 0;
+			info->forks[info->philo[i].right] = 0;
+			pthread_mutex_unlock(&info->fork_locker[info->philo[i].left]);
+			pthread_mutex_unlock(&info->fork_locker[info->philo[i].right]);
+			display_mesg(info, info->philo[i].left, "has released the forks");
 			break;
 		}
 	}
@@ -60,14 +86,14 @@ void	put_down_fork(t_info *info, int i)
 
 void	sleeping(t_info *info, int i)
 {
-	printf("Philo %d is sleeping😴\n", i + 1);
-	wating_time(info->time_to_sleep);
+		display_mesg(info, i, "is sleeping😴");
+		wating_time(info->time_to_sleep);
 }
 
-void	thinking(t_info *info, int i)
-{
-	printf("Philo %d is thinking🤔\n", i + 1);
-}
+// void	thinking(t_info *info, int i)
+// {
+// 	printf(" %lld Philo %d is thinking🤔\n", get_time() - info->start_time, i + 1);
+// }
 
 void	*routine(void *info)
 {
@@ -76,17 +102,18 @@ void	*routine(void *info)
 
 	inf = (t_info *)info;
 	i =  inf->n_thread;
-	while (is_dead(inf) && inf->dead == 0)
+	while (inf->dead == 0)
 	{
 		pick_up_fork(inf, i);
 		put_down_fork(inf, i);
 		sleeping(inf, i);
-		thinking(inf, i);
+		display_mesg(inf, i, "is thinking🤔");
 	}
-	if (inf->dead == 1)
-	{
-		printf("Philo %d is died💀\n", i + 1);
-		return (FALSE);
-	}
+	// if (inf->dead == 1 && inf->flag)
+	// {
+	// 	printf(" %lld Philo %d is dead\n", get_time() - inf->start_time, i + 1);
+	// 	inf->flag = 0;
+	// 	return (FALSE);
+	// }
 	return (NULL);
 }
