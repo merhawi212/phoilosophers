@@ -6,7 +6,7 @@
 /*   By: mkiflema <mkiflema@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/20 14:27:02 by mkiflema          #+#    #+#             */
-/*   Updated: 2023/06/01 22:12:32 by mkiflema         ###   ########.fr       */
+/*   Updated: 2023/06/01 22:18:05 by mkiflema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@ long long	get_time(void)
 	gettimeofday(&current_time, NULL);
 	return (current_time.tv_sec * 1000 + current_time.tv_usec / 1000);
 }
-
 
 void	wating_time(long long	time)
 {

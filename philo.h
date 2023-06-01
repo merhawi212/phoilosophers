@@ -57,7 +57,7 @@ typedef struct s_info
 // utils.c
 void	display_message(int i, int arg);
 void	validate_args(char **argv);
-int		ft_atoi(char *str);
+long	ft_atoi(char *str);
 
 //routine
 void	*routine(void *philo);
