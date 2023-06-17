@@ -6,7 +6,7 @@
 /*   By: mkiflema <mkiflema@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/20 14:27:02 by mkiflema          #+#    #+#             */
-/*   Updated: 2023/06/01 22:18:05 by mkiflema         ###   ########.fr       */
+/*   Updated: 2023/06/17 21:02:06 by mkiflema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,14 +17,15 @@ long long	get_time(void)
 	struct timeval	current_time;
 
 	gettimeofday(&current_time, NULL);
-	return (current_time.tv_sec * 1000 + current_time.tv_usec / 1000);
+	return ((current_time.tv_sec * 1000) + (current_time.tv_usec / 1000));
 }
 
-void	wating_time(long long	time)
+void	waiting_time(long long time)
 {
-	long long cur_time;
+	long long	time_start;
 
-	cur_time = get_time();
-	while (get_time() - cur_time < time)
-		usleep(100);
+	time_start = get_time();
+	while (get_time() - time_start < time)
+		usleep(10);
+	// usleep(100 * time);
 }

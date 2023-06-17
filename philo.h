@@ -20,20 +20,19 @@
 # include <sys/time.h>
 # define TRUE 1
 # define FALSE 0
-
-// typedef struct s_fork
-// {
-// 	int	left;
-// 	int	right;
-// }		t_fork;
+# define RED "\033[31m"
+# define BLUE "\033[34m"
+# define YELLOW "\033[33m"
+# define GREEN  "\033[32m"
+# define RESET_COLOR "\033[0m"
 
 typedef struct s_philo
 {
 	int				id;
+	int				count_eating_times;
 	int				left;
 	int				right;
 	long long		last_eat_time;
-	// enum {THINKING, EATING, SLEEPING}	*e_state;
 }		t_philo;
 
 typedef struct s_info
@@ -43,34 +42,45 @@ typedef struct s_info
 	int				dead;
 	int				n_thread;
 	int				philo_num;
-	int				flag;
+	int				times_must_eat;
 	long long		time_to_eat;
 	long long		time_to_die;
 	long long		time_to_sleep;
 	pthread_mutex_t	*fork_locker;
 	pthread_mutex_t	print;
-
+	pthread_mutex_t	endgame;
+	pthread_mutex_t	isdead;
+	pthread_mutex_t	clear;
+	pthread_mutex_t	thread;
+	pthread_mutex_t	*last_eat_locker;
 	int				*forks;
 	t_philo			*philo;
 }		t_info;
 
 // utils.c
-void	display_message(int i, int arg);
-void	validate_args(char **argv);
-long	ft_atoi(char *str);
+void		display_error_message(int i, int arg);
+void		validate_args(char **argv, int argc);
+long		ft_atoi(char *str);
 
 //routine
-void	*routine(void *philo);
-
+void		*routine(void *philo);
+void		display_message(t_info *info, int i, char *color, char *str);
 
 //thread_handler
-int		create_thread(t_info *info);
+int			create_thread(t_info *info);
 
 //fork_handler
-int		create_fork(t_info *info);
+int			create_fork(t_info *info);
 
 //time_handler
 long long	get_time(void);
-int		is_dead(t_info *info, int i);
-void	wating_time(long long	time);
+int			is_dead(t_info *info);
+void		waiting_time(long long time);
+
+// checker
+int			checker(t_info *info);
+int			is_someone_died(t_info *info);
+
+// philo
+void		clear_all(t_info *info);
 #endif

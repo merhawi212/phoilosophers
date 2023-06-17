@@ -17,24 +17,44 @@ void	destroy_mutex(t_info *info)
 	int	i;
 
 	i = -1;
-	free(info->p_th);
+	pthread_mutex_lock(&info->print);
 	while (++i < info->philo_num)
+	{
 		pthread_mutex_destroy(&info->fork_locker[i]);
+		pthread_mutex_destroy(&info->last_eat_locker[i]);
+	}
+	pthread_mutex_destroy(&info->endgame);
+	pthread_mutex_destroy(&info->isdead);
 	free(info->forks);
 	free(info->fork_locker);
-	free(info->philo);
+	free(info->last_eat_locker);
+	pthread_mutex_unlock(&info->print);
+	pthread_mutex_destroy(&info->print);
+	pthread_mutex_destroy(&info->thread);
 }
 
-void	feed_philo(t_info *info, char **argv, int philo_num)
+void	clear_all(t_info *info)
 {
-	int	i;
+	destroy_mutex(info);
+	pthread_mutex_destroy(&info->clear);
+	free(info->p_th);
+	free(info->philo);
+	free(info);
+	return ;
+}
+
+void	feed_philo(t_info *info, char **argv, int philo_num, int argc)
+{
+	int			i;
 	long long	current_time;
 
 	info->time_to_die = ft_atoi(argv[2]);
 	info->time_to_eat = ft_atoi(argv[3]);
 	info->time_to_sleep = ft_atoi(argv[4]);
+	info->times_must_eat = 0;
+	if (argc == 6)
+		info->times_must_eat = ft_atoi(argv[5]);
 	info->dead = 0;
-	info->flag = 1;
 	i = -1;
 	current_time = get_time();
 	while (++i < info->philo_num)
@@ -43,11 +63,11 @@ void	feed_philo(t_info *info, char **argv, int philo_num)
 		info->philo[i].left = i;
 		info->philo[i].right = (i + 1) % info->philo_num;
 		info->philo[i].last_eat_time = current_time;
-
+		info->philo[i].count_eating_times = 0;
 	}
 }
 
-int	create_philos(t_info *info, char **argv, int philo_num)
+int	create_philos(t_info *info, char **argv, int philo_num, int argc)
 {
 	int	i;
 
@@ -55,47 +75,37 @@ int	create_philos(t_info *info, char **argv, int philo_num)
 	info->philo = malloc(sizeof(t_philo) * (philo_num + 1));
 	if (!info->philo)
 		return (FALSE);
-	feed_philo(info, argv, philo_num);
+	feed_philo(info, argv, philo_num, argc);
 	return (TRUE);
 }
-
-// void	*routine_one(void *info)
-// {
-// 	t_info	*inf;
-
-// 	inf = (t_info *)info;
-// }
-
-// void 	only_one_philo(t_info *info)
-// {
-// 	info->p_th = malloc(sizeof(pthread_t) * info->philo_num + 1);
-// 	if (!info->p_th)
-// 		return (FALSE);
-// 	info->n_thread = 0;
-// 	if (pthread_create(&info->p_th[0], NULL, &routine_one, (void *)info) != 0)
-// 		return (FALSE);
-// 	while (info->dead == 0)
-// 		wating_time(1);
-	
-// }
 
 int	main(int argc, char **argv)
 {
 	int			num;
-	t_info		info;
+	t_info		*info;
 
-	if (argc == 5)
+	if (argc == 5 || argc == 6)
 	{
-		validate_args(argv + 1);
+		validate_args(argv + 1, argc);
 		num = ft_atoi(argv[1]);
-		if (num <= 0)
-			display_message(2, 1);
-		if (!create_philos(&info, argv, num))
-			return (FALSE);
-		if (!create_fork(&info))
-			return (FALSE);
-		if (create_thread(&info) == FALSE)
-			return (FALSE);
-		destroy_mutex(&info);
+		info = malloc(sizeof(t_info));
+		if (!create_philos(info, argv, num, argc))
+		{
+			free(info->philo);
+			return (1);
+		}
+		if (!create_fork(info))
+		{
+			free(info->philo);
+			destroy_mutex(info);
+			pthread_mutex_destroy(&info->clear);
+			return (1);
+		}
+		if (create_thread(info) == FALSE)
+		{
+			clear_all(info);
+			return (1);
+		}
+		// clear_all(info);
 	}
 }

@@ -1,6 +1,8 @@
 {
 	"files.associations": {
 		"ratio": "c",
-		"__threading_support": "c"
+		"__threading_support": "c",
+		"philo.h": "c",
+		"time.h": "c"
 	}
 }
