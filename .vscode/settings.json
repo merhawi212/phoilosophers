@@ -3,6 +3,8 @@
 		"ratio": "c",
 		"__threading_support": "c",
 		"philo.h": "c",
-		"time.h": "c"
+		"time.h": "c",
+		"ios": "c",
+		"locale": "c"
 	}
 }

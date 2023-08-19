@@ -6,21 +6,11 @@
 /*   By: mkiflema <mkiflema@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/20 14:31:45 by mkiflema          #+#    #+#             */
-/*   Updated: 2023/06/17 21:04:15 by mkiflema         ###   ########.fr       */
+/*   Updated: 2023/08/19 21:57:30 by mkiflema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
-int static	thread_join(t_info *info)
-{
-	int	i;
-
-	i = -1;
-	while (++i < info->philo_num)
-		pthread_join(info->p_th[i], NULL);
-	return (TRUE);
-}
 
 int	create_thread(t_info *info)
 {
@@ -41,7 +31,6 @@ int	create_thread(t_info *info)
 			if (pthread_create(&info->p_th[i], NULL,
 					&routine, (void *)info) != 0)
 			{
-				thread_join(info);
 				return (0);
 			}
 		}
@@ -51,7 +40,7 @@ int	create_thread(t_info *info)
 	}
 	if (!checker(info))
 		return (FALSE);
-	if (!thread_join(info))
-		return (FALSE);
+	// if (!thread_join(info))
+	// 	return (FALSE);
 	return (TRUE);
 }

@@ -12,31 +12,38 @@
 
 #include "philo.h"
 
+int	thread_join(t_info *info)
+{
+	int	i;
+
+	i = -1;
+	while (++i < info->philo_num)
+		pthread_join(info->p_th[i], NULL);
+	return (TRUE);
+}
+
 void	destroy_mutex(t_info *info)
 {
 	int	i;
 
 	i = -1;
-	pthread_mutex_lock(&info->print);
 	while (++i < info->philo_num)
 	{
 		pthread_mutex_destroy(&info->fork_locker[i]);
-		pthread_mutex_destroy(&info->last_eat_locker[i]);
 	}
-	pthread_mutex_destroy(&info->endgame);
-	pthread_mutex_destroy(&info->isdead);
+	pthread_mutex_destroy(&info->last_eat_locker);
 	free(info->forks);
 	free(info->fork_locker);
-	free(info->last_eat_locker);
-	pthread_mutex_unlock(&info->print);
-	pthread_mutex_destroy(&info->print);
+	// free(info->last_eat_locker);
+	pthread_mutex_destroy(&info->endgame);
 	pthread_mutex_destroy(&info->thread);
+	pthread_mutex_destroy(&info->print);
+	pthread_mutex_destroy(&info->isdead);
 }
 
 void	clear_all(t_info *info)
 {
 	destroy_mutex(info);
-	pthread_mutex_destroy(&info->clear);
 	free(info->p_th);
 	free(info->philo);
 	free(info);
@@ -48,6 +55,7 @@ void	feed_philo(t_info *info, char **argv, int philo_num, int argc)
 	int			i;
 	long long	current_time;
 
+	(void) philo_num;
 	info->time_to_die = ft_atoi(argv[2]);
 	info->time_to_eat = ft_atoi(argv[3]);
 	info->time_to_sleep = ft_atoi(argv[4]);
@@ -69,8 +77,6 @@ void	feed_philo(t_info *info, char **argv, int philo_num, int argc)
 
 int	create_philos(t_info *info, char **argv, int philo_num, int argc)
 {
-	int	i;
-
 	info->philo_num = philo_num;
 	info->philo = malloc(sizeof(t_philo) * (philo_num + 1));
 	if (!info->philo)
@@ -92,20 +98,20 @@ int	main(int argc, char **argv)
 		if (!create_philos(info, argv, num, argc))
 		{
 			free(info->philo);
+			free(info);
 			return (1);
 		}
 		if (!create_fork(info))
 		{
 			free(info->philo);
 			destroy_mutex(info);
-			pthread_mutex_destroy(&info->clear);
 			return (1);
 		}
 		if (create_thread(info) == FALSE)
 		{
+			thread_join(info);
 			clear_all(info);
 			return (1);
 		}
-		// clear_all(info);
 	}
 }

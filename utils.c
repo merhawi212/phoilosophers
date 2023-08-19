@@ -6,7 +6,7 @@
 /*   By: mkiflema <mkiflema@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/21 16:09:33 by marvin            #+#    #+#             */
-/*   Updated: 2023/06/03 17:38:22 by mkiflema         ###   ########.fr       */
+/*   Updated: 2023/08/19 20:07:50 by mkiflema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ long	ft_atoi(char *str)
 	i = 0;
 	sign = 1;
 	result = 0;
-	while (str[i] && (str[i] >= 9 && str[i] <= 13 || str[i] == ' '))
+	while (str[i] && ((str[i] >= 9 && str[i] <= 13) || str[i] == ' '))
 		i++;
 	if (str[i] == '-' || str[i] == '+')
 	{
@@ -61,7 +61,7 @@ static int	is_num(char *str)
 	i = 0;
 	while (str[i])
 	{
-		if (!(str[i] >= '0' && str[i] <= '9' || str[i] == '+' || str[i] == '-'))
+		if (!((str[i] >= '0' && str[i] <= '9') || str[i] == '+' || str[i] == '-'))
 			return (0);
 		i++;
 	}
@@ -73,6 +73,7 @@ void	validate_args(char **argv, int argc)
 	int	i;
 
 	i = 0;
+	(void)argc;
 	if (!argv[i])
 		display_error_message(-1, 1);
 	while (argv[i])
