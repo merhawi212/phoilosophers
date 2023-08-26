@@ -6,7 +6,7 @@
 /*   By: mkiflema <mkiflema@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/20 18:10:03 by mkiflema          #+#    #+#             */
-/*   Updated: 2023/08/19 20:11:47 by mkiflema         ###   ########.fr       */
+/*   Updated: 2023/08/26 17:09:27 by mkiflema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,5 @@ int	create_fork(t_info *info)
 	pthread_mutex_init(&info->last_eat_locker, NULL);
 	pthread_mutex_init(&info->print, NULL);
 	pthread_mutex_init(&info->endgame, NULL);
-	pthread_mutex_init(&info->thread, NULL);
-	pthread_mutex_init(&info->isdead, NULL);
 	return (TRUE);
 }

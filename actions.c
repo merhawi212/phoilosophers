@@ -6,146 +6,134 @@
 /*   By: mkiflema <mkiflema@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/19 14:46:41 by mkiflema          #+#    #+#             */
-/*   Updated: 2023/08/19 22:41:11 by mkiflema         ###   ########.fr       */
+/*   Updated: 2023/08/26 19:40:00 by mkiflema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	pick_up_fork_even(t_info *info, int i)
+int	pick_up_fork_even(t_philo *philo, t_philo phi)
 {
-	pthread_mutex_lock(&info->fork_locker[info->philo[i].right]);
-	pthread_mutex_lock(&info->fork_locker[info->philo[i].left]);
-	while ((info->forks[info->philo[i].left]
-			|| info->forks[info->philo[i].right]))
+	pthread_mutex_lock(&philo->data->fork_locker[phi.right]);
+	pthread_mutex_lock(&philo->data->fork_locker[phi.left]);
+	while ((philo->data->forks[phi.left]
+			|| philo->data->forks[phi.right]))
 	{
-		pthread_mutex_unlock(&info->fork_locker[info->philo[i].right]);
-		pthread_mutex_unlock(&info->fork_locker[info->philo[i].left]);
-		pthread_mutex_lock(&info->isdead);
-		if (info->dead)
+		pthread_mutex_unlock(&philo->data->fork_locker[phi.right]);
+		pthread_mutex_unlock(&philo->data->fork_locker[phi.left]);
+		pthread_mutex_lock(&philo->data->endgame);
+		if (philo->data->dead)
 		{
-			pthread_mutex_unlock(&info->isdead);
+			pthread_mutex_unlock(&philo->data->endgame);
 			return (0);
 		}
-		pthread_mutex_unlock(&info->isdead);
-		usleep(100);
-		pthread_mutex_lock(&info->fork_locker[info->philo[i].right]);
-		pthread_mutex_lock(&info->fork_locker[info->philo[i].left]);
+		pthread_mutex_unlock(&philo->data->endgame);
+		usleep(200);
+		pthread_mutex_lock(&philo->data->fork_locker[phi.right]);
+		pthread_mutex_lock(&philo->data->fork_locker[phi.left]);
 	}
-	info->forks[info->philo[i].left] = 1;
-	display_message(info, info->philo[i].left, RESET_COLOR,
+	philo->data->forks[phi.left] = 1;
+	display_message(philo, phi.left, RESET_COLOR,
 		"has taken a left fork🥄");
-	info->forks[info->philo[i].right] = 1;
-	display_message(info, info->philo[i].left, RESET_COLOR,
+	philo->data->forks[phi.right] = 1;
+	display_message(philo, phi.left, RESET_COLOR,
 		"has taken a right fork🥄");
-	pthread_mutex_unlock(&info->fork_locker[info->philo[i].right]);
-	pthread_mutex_unlock(&info->fork_locker[info->philo[i].left]);
+	pthread_mutex_unlock(&philo->data->fork_locker[phi.right]);
+	pthread_mutex_unlock(&philo->data->fork_locker[phi.left]);
 	return (1);
 }
 
-int	pick_up_fork(t_info *info, int i)
+int	pick_up_fork(t_philo *philo, t_philo phi)
 {
-	pthread_mutex_lock(&info->fork_locker[info->philo[i].left]);
-	pthread_mutex_lock(&info->fork_locker[info->philo[i].right]);
-	while ((info->forks[info->philo[i].left]
-			|| info->forks[info->philo[i].right]))
+	display_message(philo, phi.id, BLUE, "is thinking🤔");
+	if ((phi.id + 1) % 2 == 0)
 	{
-		pthread_mutex_unlock(&info->fork_locker[info->philo[i].left]);
-		pthread_mutex_unlock(&info->fork_locker[info->philo[i].right]);
-		pthread_mutex_lock(&info->isdead);
-		if (info->dead)
+		usleep(1500);
+		if (!pick_up_fork_even(philo, phi))
+			return (0);
+		return (1);
+	}
+	pthread_mutex_lock(&philo->data->fork_locker[phi.left]);
+	pthread_mutex_lock(&philo->data->fork_locker[phi.right]);
+	while ((philo->data->forks[phi.left]
+			|| philo->data->forks[phi.right]))
+	{
+		pthread_mutex_unlock(&philo->data->fork_locker[phi.left]);
+		pthread_mutex_unlock(&philo->data->fork_locker[phi.right]);
+		pthread_mutex_lock(&philo->data->endgame);
+		if (philo->data->dead)
 		{
-			pthread_mutex_unlock(&info->isdead);
+			pthread_mutex_unlock(&philo->data->endgame);
 			return (0);
 		}
-		pthread_mutex_unlock(&info->isdead);
+		pthread_mutex_unlock(&philo->data->endgame);
 		usleep(100);
-		pthread_mutex_lock(&info->fork_locker[info->philo[i].left]);
-		pthread_mutex_lock(&info->fork_locker[info->philo[i].right]);
+		pthread_mutex_lock(&philo->data->fork_locker[phi.left]);
+		pthread_mutex_lock(&philo->data->fork_locker[phi.right]);
 	}
-	info->forks[info->philo[i].left] = 1;
-	display_message(info, info->philo[i].left, RESET_COLOR,
+	philo->data->forks[phi.left] = 1;
+	display_message(philo, phi.left, RESET_COLOR,
 		"has taken a left fork🥄");
-	info->forks[info->philo[i].right] = 1;
-	display_message(info, info->philo[i].left, RESET_COLOR,
+	philo->data->forks[phi.right] = 1;
+	display_message(philo, phi.left, RESET_COLOR,
 		"has taken a right fork🥄");
-	pthread_mutex_unlock(&info->fork_locker[info->philo[i].left]);
-	pthread_mutex_unlock(&info->fork_locker[info->philo[i].right]);
+	pthread_mutex_unlock(&philo->data->fork_locker[phi.left]);
+	pthread_mutex_unlock(&philo->data->fork_locker[phi.right]);
 	return (1);
 }
-// int	pick_up_fork(t_info *info, int i)
-// {
-// 	// pthread_mutex_lock(&info->endgame);
-// 	while (info->dead == 0)
-// 	{
-// 		// pthread_mutex_unlock(&info->endgame);
-// 		// pthread_mutex_unlock(&info->fork_locker[info->philo[i].left]);
-// 		// pthread_mutex_unlock(&info->fork_locker[info->philo[i].right]);
-// 		if ((info->forks[info->philo[i].left]
-// 				&& info->forks[info->philo[i].right]))
-// 		{
-// 			pthread_mutex_lock(&info->fork_locker[info->philo[i].left]);
-// 			pthread_mutex_lock(&info->fork_locker[info->philo[i].right]);
-// 			info->forks[info->philo[i].left] = 1;
-// 			display_message(info, info->philo[i].left, RESET_COLOR,
-// 				"has taken a left fork🥄");
-// 			info->forks[info->philo[i].right] = 1;
-// 			display_message(info, info->philo[i].left, RESET_COLOR,
-// 				"has taken a right fork🥄");
-// 			pthread_mutex_unlock(&info->fork_locker[info->philo[i].left]);
-// 			pthread_mutex_unlock(&info->fork_locker[info->philo[i].right]);
-// 			return (1);
-// 		}
-// 		// pthread_mutex_lock(&info->endgame);
-// 		usleep(100);
-// 	}
-// 	// pthread_mutex_unlock(&info->endgame);
-// 	return (0);
-// }
 
-int	eating(t_info *info, int i)
+int	eating(t_philo *philo, t_philo *phil)
 {
-	// pthread_mutex_lock(&info->endgame);
-	if (info->dead)
+	pthread_mutex_lock(&philo->data->endgame);
+	if (philo->data->dead)
 	{
-		// pthread_mutex_unlock(&info->endgame);
+		pthread_mutex_unlock(&philo->data->endgame);
 		return (0);
 	}
-	display_message(info, info->philo[i].left, GREEN, "is eating😋");
-	pthread_mutex_lock(&info->last_eat_locker);
-	info->philo[i].last_eat_time = get_time();
-	info->philo[i].count_eating_times++;
-	pthread_mutex_unlock(&info->last_eat_locker);
-	waiting_time(info->time_to_eat);
-	// pthread_mutex_unlock(&info->endgame);
+	pthread_mutex_unlock(&philo->data->endgame);
+	display_message(philo, phil->id, GREEN, "is eating😋");
+	pthread_mutex_lock(&philo->data->last_eat_locker);
+	phil->last_eat_time = get_time();
+	phil->count_eating_times++;
+	pthread_mutex_unlock(&philo->data->last_eat_locker);
+	waiting_time(philo->data->time_to_eat);
 	return (1);
 }
 
-int	put_down_fork(t_info *info, int i)
+int	put_down_fork(t_philo *philo, t_philo phi)
 {
-	pthread_mutex_lock(&info->fork_locker[info->philo[i].right]);
-	pthread_mutex_lock(&info->fork_locker[info->philo[i].left]);
-	info->forks[info->philo[i].right] = 0;
-	info->forks[info->philo[i].left] = 0;
-	display_message(info, info->philo[i].left, RESET_COLOR,
+	pthread_mutex_lock(&philo->data->endgame);
+	printf("inside game %d\n", phi.id + 1);
+	if (philo->data->dead)
+	{
+		pthread_mutex_unlock(&philo->data->endgame);
+		return (0);
+	}
+	printf("endgame its %d\n", phi.id + 1);
+	pthread_mutex_unlock(&philo->data->endgame);
+	pthread_mutex_lock(&philo->data->fork_locker[phi.right]);
+	philo->data->forks[phi.right] = 0;
+	pthread_mutex_unlock(&philo->data->fork_locker[phi.right]);
+	pthread_mutex_lock(&philo->data->fork_locker[phi.left]);
+	philo->data->forks[phi.left] = 0;
+	pthread_mutex_unlock(&philo->data->fork_locker[phi.left]);
+	display_message(philo, phi.left, RESET_COLOR,
 		"has released a right fork🥄");
-	display_message(info, info->philo[i].left, RESET_COLOR,
+	display_message(philo, phi.left, RESET_COLOR,
 		"has released a left fork🥄");
-	pthread_mutex_unlock(&info->fork_locker[info->philo[i].left]);
-	pthread_mutex_unlock(&info->fork_locker[info->philo[i].right]);
 	return (1);
 }
 
-int	sleeping(t_info *info, int i)
+int	sleeping(t_philo *philo, t_philo phi)
 {
-	pthread_mutex_lock(&info->endgame);
-	if (info->dead)
+	pthread_mutex_lock(&philo->data->endgame);
+	if (philo->data->dead)
 	{
-		pthread_mutex_unlock(&info->endgame);
+		pthread_mutex_unlock(&philo->data->endgame);
 		return (0);
 	}
-	pthread_mutex_unlock(&info->endgame);
-	display_message(info, i, YELLOW, "is sleeping😴");
-	waiting_time(info->time_to_sleep);
+	pthread_mutex_unlock(&philo->data->endgame);
+	display_message(philo, phi.left, YELLOW, "is sleeping😴");
+	waiting_time(philo->data->time_to_sleep);
 	return (1);
 }

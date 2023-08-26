@@ -35,14 +35,14 @@ typedef struct s_philo
 	int				left;
 	int				right;
 	long long		last_eat_time;
+	pthread_t		p_thread;
+	struct s_info	*data;
 }		t_philo;
 
 typedef struct s_info
 {
-	pthread_t		*p_th;
 	long long		start_time;
 	int				dead;
-	int				n_thread;
 	int				philo_num;
 	int				times_must_eat;
 	long long		time_to_eat;
@@ -50,9 +50,7 @@ typedef struct s_info
 	long long		time_to_sleep;
 	pthread_mutex_t	*fork_locker;
 	pthread_mutex_t	print;
-	pthread_mutex_t	isdead;
 	pthread_mutex_t	endgame;
-	pthread_mutex_t	thread;
 	pthread_mutex_t	last_eat_locker;
 	int				*forks;
 	t_philo			*philo;
@@ -65,13 +63,14 @@ long		ft_atoi(char *str);
 
 //routine
 void		*routine(void *philo);
-void		display_message(t_info *info, int i, char *color, char *str);
+void		display_message(t_philo *philo, int id, char *color, char *str);
 
 // actions.c
-int			pick_up_fork(t_info *info, int i);
-int			eating(t_info *info, int i);
-int			put_down_fork(t_info *info, int i);
-int			sleeping(t_info *info, int i);
+int			pick_up_fork(t_philo *philo, t_philo phi);
+int			pick_up_fork_even(t_philo *philo, t_philo phi);
+int			eating(t_philo *philo, t_philo *phil);
+int			put_down_fork(t_philo *philo, t_philo phi);
+int			sleeping(t_philo *philo, t_philo phi);
 
 //thread_handler
 int			create_thread(t_info *info);
@@ -86,7 +85,7 @@ void		waiting_time(long long time);
 
 // checker
 int			checker(t_info *info);
-int			is_someone_died(t_info *info);
+int			is_someone_died(t_philo *philo);
 
 // philo
 void		clear_all(t_info *info);

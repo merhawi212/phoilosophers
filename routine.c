@@ -6,46 +6,60 @@
 /*   By: mkiflema <mkiflema@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/12 20:23:33 by mkiflema          #+#    #+#             */
-/*   Updated: 2023/08/19 22:38:21 by mkiflema         ###   ########.fr       */
+/*   Updated: 2023/08/26 18:23:25 by mkiflema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	display_message(t_info *info, int i, char *color, char *str)
+void	display_message(t_philo *philo, int id, char *color, char *str)
 {
-	pthread_mutex_lock(&info->print);
+	pthread_mutex_lock(&philo->data->print);
 	printf("%s%lld Philo %d %s\n%s"RESET_COLOR, color,
-		get_time() - info->start_time, i + 1, str, RESET_COLOR);
-	pthread_mutex_unlock(&info->print);
+		get_time() - philo->data->start_time, id + 1, str, RESET_COLOR);
+	pthread_mutex_unlock(&philo->data->print);
 }
 
-int	pick_up_one_fork(t_info *info, int i)
+int	pick_up_one_fork(t_philo *philo, t_philo phil)
 {
-	while (is_someone_died(info) == 0)
+	while (is_someone_died(philo) == 0)
 	{
-		if (info->forks[info->philo[i].left] == 0)
+		if (philo->data->forks[phil.left] == 0)
 		{
-			pthread_mutex_lock(&info->fork_locker[info->philo[i].left]);
-			info->forks[info->philo[i].left] = 1;
-			display_message(info, info->philo[i].left,
+			pthread_mutex_lock(&philo->data->fork_locker[phil.left]);
+			philo->data->forks[phil.left] = 1;
+			display_message(philo, phil.left,
 				RESET_COLOR, "has taken a fork");
-			pthread_mutex_unlock(&info->fork_locker[info->philo[i].left]);
+			pthread_mutex_unlock(&philo->data->fork_locker[phil.left]);
 			break ;
 		}
 	}
 	return (0);
 }
 
-void	*routine(void *info)
+void	*routine(void *phi)
 {
-	t_info		*inf;
-	int			i;
+	t_philo		*philo;
 
-	inf = (t_info *)info;
-	pthread_mutex_lock(&inf->thread);
-	i = inf->n_thread;
-	pthread_mutex_unlock(&inf->thread);
+	philo = (t_philo *)phi;
+	while (is_someone_died(philo) == 0)
+	{
+		if (philo->data->philo_num == 1 
+			&& !pick_up_one_fork(philo, philo->data->philo[philo->id]))
+			return ((void *)1);
+		else
+			if (!pick_up_fork(philo, philo->data->philo[philo->id]))
+				return ((void *)1);
+		if (!eating(philo, &philo->data->philo[philo->id]))
+			return ((void *)1);
+		if (!put_down_fork(philo, philo->data->philo[philo->id]))
+			return ((void *)1);
+		if (!sleeping(philo, philo->data->philo[philo->id]))
+			return ((void *)1);
+	}
+	return (NULL);
+}
+
 	// if (inf->time_to_die < 60)
 	// {
 	// 	printf("Error!\n Eating time should be at least 60 ms");
@@ -55,25 +69,3 @@ void	*routine(void *info)
 	// 	return (void *)1;
 	// }
 	// pthread_mutex_lock(&inf->endgame);
-	while (inf->dead == 0)
-	{
-		// pthread_mutex_unlock(&inf->endgame);
-		display_message(inf, i, BLUE, "is thinking🤔");
-		if (inf->philo_num == 1 && !pick_up_one_fork(inf, i))
-			return ((void *)1);
-		else
-			if (!pick_up_fork(inf, i))
-				return ((void *)1);
-		if (!eating(inf, i))
-			return ((void *)1);
-		if (!put_down_fork(inf, i))
-			return ((void *)1);
-		if (!sleeping(inf, i))
-			return ((void *)1);
-		if (is_someone_died(inf))
-			return ((void *)1);
-		// pthread_mutex_lock(&inf->endgame);
-	}
-	// pthread_mutex_unlock(&inf->endgame);
-	return (NULL);
-}

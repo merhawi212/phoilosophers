@@ -6,7 +6,7 @@
 /*   By: mkiflema <mkiflema@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/20 14:27:02 by mkiflema          #+#    #+#             */
-/*   Updated: 2023/06/17 21:02:06 by mkiflema         ###   ########.fr       */
+/*   Updated: 2023/08/26 17:59:32 by mkiflema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,5 @@ void	waiting_time(long long time)
 
 	time_start = get_time();
 	while (get_time() - time_start < time)
-		usleep(10);
-	// usleep(100 * time);
+		usleep(100);
 }

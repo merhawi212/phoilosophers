@@ -18,7 +18,7 @@ int	thread_join(t_info *info)
 
 	i = -1;
 	while (++i < info->philo_num)
-		pthread_join(info->p_th[i], NULL);
+		pthread_join(info->philo[i].p_thread, NULL);
 	return (TRUE);
 }
 
@@ -34,17 +34,13 @@ void	destroy_mutex(t_info *info)
 	pthread_mutex_destroy(&info->last_eat_locker);
 	free(info->forks);
 	free(info->fork_locker);
-	// free(info->last_eat_locker);
 	pthread_mutex_destroy(&info->endgame);
-	pthread_mutex_destroy(&info->thread);
 	pthread_mutex_destroy(&info->print);
-	pthread_mutex_destroy(&info->isdead);
 }
 
 void	clear_all(t_info *info)
 {
 	destroy_mutex(info);
-	free(info->p_th);
 	free(info->philo);
 	free(info);
 	return ;
@@ -72,6 +68,7 @@ void	feed_philo(t_info *info, char **argv, int philo_num, int argc)
 		info->philo[i].right = (i + 1) % info->philo_num;
 		info->philo[i].last_eat_time = current_time;
 		info->philo[i].count_eating_times = 0;
+		info->philo[i].data = info;
 	}
 }
 
@@ -114,4 +111,5 @@ int	main(int argc, char **argv)
 			return (1);
 		}
 	}
+	return (0);
 }
