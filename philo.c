@@ -12,104 +12,66 @@
 
 #include "philo.h"
 
-int	thread_join(t_info *info)
+int	create_fork(t_data *data)
 {
 	int	i;
 
-	i = -1;
-	while (++i < info->philo_num)
-		pthread_join(info->philo[i].p_thread, NULL);
-	return (TRUE);
-}
-
-void	destroy_mutex(t_info *info)
-{
-	int	i;
-
-	i = -1;
-	while (++i < info->philo_num)
-	{
-		pthread_mutex_destroy(&info->fork_locker[i]);
-	}
-	pthread_mutex_destroy(&info->last_eat_locker);
-	free(info->forks);
-	free(info->fork_locker);
-	pthread_mutex_destroy(&info->endgame);
-	pthread_mutex_destroy(&info->print);
-}
-
-void	clear_all(t_info *info)
-{
-	destroy_mutex(info);
-	free(info->philo);
-	free(info);
-	return ;
-}
-
-void	feed_philo(t_info *info, char **argv, int philo_num, int argc)
-{
-	int			i;
-	long long	current_time;
-
-	(void) philo_num;
-	info->time_to_die = ft_atoi(argv[2]);
-	info->time_to_eat = ft_atoi(argv[3]);
-	info->time_to_sleep = ft_atoi(argv[4]);
-	info->times_must_eat = 0;
-	if (argc == 6)
-		info->times_must_eat = ft_atoi(argv[5]);
-	info->dead = 0;
-	i = -1;
-	current_time = get_time();
-	while (++i < info->philo_num)
-	{
-		info->philo[i].id = i;
-		info->philo[i].left = i;
-		info->philo[i].right = (i + 1) % info->philo_num;
-		info->philo[i].last_eat_time = current_time;
-		info->philo[i].count_eating_times = 0;
-		info->philo[i].data = info;
-	}
-}
-
-int	create_philos(t_info *info, char **argv, int philo_num, int argc)
-{
-	info->philo_num = philo_num;
-	info->philo = malloc(sizeof(t_philo) * (philo_num + 1));
-	if (!info->philo)
+	data->fork_locker = malloc(sizeof(pthread_mutex_t) * data->philo_num);
+	if (!data->fork_locker)
 		return (FALSE);
-	feed_philo(info, argv, philo_num, argc);
+	data->forks = malloc(sizeof(int) * data->philo_num);
+	if (!data->forks)
+		return (FALSE);
+	i = -1;
+	while (++i < data->philo_num)
+	{
+		data->forks[i] = 0;
+		pthread_mutex_init(&data->fork_locker[i], NULL);
+	}
 	return (TRUE);
 }
 
-int	main(int argc, char **argv)
+int	create_philos(t_data *data)
 {
-	int			num;
-	t_info		*info;
+	long long	current_time;
+	int			i;
 
-	if (argc == 5 || argc == 6)
+	data->philo = malloc(sizeof(t_philo) * (data->philo_num + 1));
+	if (!data->philo)
+		return (FALSE);
+	current_time = get_time();
+	i = -1;
+	while (++i < data->philo_num)
 	{
-		validate_args(argv + 1, argc);
-		num = ft_atoi(argv[1]);
-		info = malloc(sizeof(t_info));
-		if (!create_philos(info, argv, num, argc))
-		{
-			free(info->philo);
-			free(info);
-			return (1);
-		}
-		if (!create_fork(info))
-		{
-			free(info->philo);
-			destroy_mutex(info);
-			return (1);
-		}
-		if (create_thread(info) == FALSE)
-		{
-			thread_join(info);
-			clear_all(info);
-			return (1);
-		}
+		data->philo[i].id = i;
+		data->philo[i].left = i;
+		data->philo[i].right = (i + 1) % data->philo_num;
+		data->philo[i].last_eat_time = current_time;
+		data->philo[i].count_eating_times = 0;
+		data->philo[i].data = data;
 	}
-	return (0);
+	return (TRUE);
+}
+
+int	create_thread(t_data *data)
+{
+	int	i;
+
+	i = -1;
+	data->start_time = get_time();
+	while (++i < data->philo_num)
+	{
+		if (data->dead == 0)
+		{
+			if (pthread_create(&data->philo[i].p_thread, NULL,
+					&routine, (void *)&data->philo[i]) != 0)
+				return (0);
+		}
+		else
+			return (FALSE);
+		usleep(100);
+	}
+	if (!checker(data))
+		return (FALSE);
+	return (TRUE);
 }

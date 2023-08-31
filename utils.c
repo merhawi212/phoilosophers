@@ -6,7 +6,7 @@
 /*   By: mkiflema <mkiflema@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/21 16:09:33 by marvin            #+#    #+#             */
-/*   Updated: 2023/08/19 20:07:50 by mkiflema         ###   ########.fr       */
+/*   Updated: 2023/08/31 18:55:59 by mkiflema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,11 +46,11 @@ long	ft_atoi(char *str)
 void	display_error_message(int i, int arg)
 {
 	if (i == -1)
-		printf("Arg number %d is null", arg);
+		printf(RED"Arg number %d is null"RESET_COLOR, arg);
 	else if (i == 0)
-		printf("Arg number %d should be greater than 0", arg);
+		printf(RED"Arg number %d should be greater than 0"RESET_COLOR, arg);
 	else if (i == 1)
-		printf("Arg number %d is not numberic", arg);
+		printf(RED"Arg number %d is not numberic"RESET_COLOR, arg);
 	exit(1);
 }
 
@@ -61,7 +61,8 @@ static int	is_num(char *str)
 	i = 0;
 	while (str[i])
 	{
-		if (!((str[i] >= '0' && str[i] <= '9') || str[i] == '+' || str[i] == '-'))
+		if (!((str[i] >= '0' && str[i] <= '9') 
+				|| str[i] == '+' || str[i] == '-'))
 			return (0);
 		i++;
 	}

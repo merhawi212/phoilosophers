@@ -6,76 +6,71 @@
 /*   By: mkiflema <mkiflema@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 15:56:39 by mkiflema          #+#    #+#             */
-/*   Updated: 2023/08/26 18:08:00 by mkiflema         ###   ########.fr       */
+/*   Updated: 2023/08/31 21:26:36 by mkiflema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	is_dead(t_info *info)
+int	is_dead(t_data *data)
 {
 	long long	elapsed_time;
 	int			i;
 
 	i = -1;
-	while (++i < info->philo_num)
+	while (++i < data->philo_num)
 	{
-		pthread_mutex_lock(&info->last_eat_locker);
-		elapsed_time = get_time() - info->philo[i].last_eat_time;
-		if (elapsed_time >= info->time_to_die)
+		pthread_mutex_lock(&data->last_eat_locker);
+		elapsed_time = get_time() - data->philo[i].last_eat_time;
+		if (elapsed_time >= data->time_to_die)
 		{
-			pthread_mutex_unlock(&info->last_eat_locker);
-			pthread_mutex_lock(&info->endgame);
-			info->dead = 1;
-			printf(RED" %lld Philo %d is dead\n"RESET_COLOR,
-				get_time() - info->start_time, i + 1);
-			pthread_mutex_unlock(&info->endgame);
+			pthread_mutex_unlock(&data->last_eat_locker);
+			pthread_mutex_lock(&data->endgame);
+			data->dead = 1;
+			pthread_mutex_unlock(&data->endgame);
+			display_message(&data->philo[i], i, RED, " dead");
 			return (0);
 		}
-		pthread_mutex_unlock(&info->last_eat_locker);
+		pthread_mutex_unlock(&data->last_eat_locker);
+		usleep(100);
 	}
 	return (1);
 }
 
-int	check_eating_times(t_info *info)
+int	check_eating_times(t_data *data)
 {
 	int	i;
 	int	sum;
 
 	i = 0;
 	sum = 0;
-	while (i < info->philo_num)
-		sum += info->philo[i++].count_eating_times;
-	if (sum >= (info->times_must_eat * info->philo_num))
+	while (i < data->philo_num)
 	{
-		pthread_mutex_lock(&info->endgame);
-		info->dead = 1;
-		printf("%lld game ended🔚\n", get_time() - info->start_time);
-		pthread_mutex_unlock(&info->endgame);
+		pthread_mutex_lock(&data->eating_times_locker);
+		sum += data->philo[i++].count_eating_times;
+		pthread_mutex_unlock(&data->eating_times_locker);
+	}
+	if (sum >= (data->times_must_eat * data->philo_num))
+	{
+		printf(CYAN"----Game ended! GG----\n"RESET_COLOR);
+		pthread_mutex_lock(&data->endgame);
+		data->dead = 1;
+		pthread_mutex_unlock(&data->endgame);
 		return (0);
 	}
 	return (1);
 }
 
-int	is_someone_died(t_philo *philo)
-{
-	int	res;
-
-	pthread_mutex_lock(&philo->data->endgame);
-	res = philo->data->dead;
-	pthread_mutex_unlock(&philo->data->endgame);
-	return (res);
-}
-
-int	checker(t_info *info)
+int	checker(t_data *data)
 {
 	while (1)
 	{
-		if (!is_dead(info))
+		if (!is_dead(data))
 			return (0);
-		if (info->times_must_eat >= 1)
-			if (!check_eating_times(info))
+		if (data->times_must_eat >= 1)
+			if (!check_eating_times(data))
 				return (0);
+		usleep(500);
 	}
 	return (0);
 }
