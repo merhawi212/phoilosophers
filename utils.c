@@ -12,6 +12,10 @@
 
 #include "philo.h"
 
+/*the last while loop of this atoi is an extra validation 
+	than the norm and that is if there is any non numberic char in between 
+	or after the numbers (+ or -), it will throw an error (returns 0).
+ */
 long	ft_atoi(char *str)
 {
 	int		i;
@@ -22,36 +26,21 @@ long	ft_atoi(char *str)
 	i = 0;
 	sign = 1;
 	result = 0;
-	while (str[i] && ((str[i] >= 9 && str[i] <= 13) || str[i] == ' '))
+	while (str[i] && ((str[i] >= 9 && str[i] <= 13) || str[i] == ' ' || str[i] == '0') )
 		i++;
 	if (str[i] == '-' || str[i] == '+')
-	{
-		if (str[i] == '-')
+		if (str[i++] == '-')
 			sign *= -1;
-		i++;
-	}
 	count = 0;
 	while (str[i] && (str[i] >= '0' && str[i] <= '9'))
 	{
-		count++;
-		if (count > 10)
-			return (0);
 		result = result * 10 + (str[i++] - '0');
+		if (++count > 10 || result > 2147483647)
+			return (0);
 	}
 	while (str[i] && !(str[i] >= '0' && str[i] <= '9'))
 		return (0);
 	return (result * sign);
-}
-
-void	display_error_message(int i, int arg)
-{
-	if (i == -1)
-		printf(RED"Arg number %d is null"RESET_COLOR, arg);
-	else if (i == 0)
-		printf(RED"Arg number %d should be greater than 0"RESET_COLOR, arg);
-	else if (i == 1)
-		printf(RED"Arg number %d is not numberic"RESET_COLOR, arg);
-	exit(1);
 }
 
 static int	is_num(char *str)
@@ -69,24 +58,24 @@ static int	is_num(char *str)
 	return (1);
 }
 
-void	validate_args(char **argv, int argc)
+int	validate_args(char **argv)
 {
 	int	i;
 
 	i = 0;
-	(void)argc;
 	if (!argv[i])
-		display_error_message(-1, 1);
+		return (display_error_message(-1, 1), 0);
 	while (argv[i])
 	{
 		if (!argv[i] || !argv[i][0])
-			display_error_message(-1, i + 1);
+			return (display_error_message(-1, i + 1), 0);
 		if (!is_num(argv[i]))
-			display_error_message(1, i + 1);
+			return (display_error_message(1, i + 1), 0);
 		if (argv[i][0] == '0' && argv[i][1] == '\0')
-			display_error_message(0, 1);
+			return (display_error_message(0, 1), 0);
 		if (ft_atoi(argv[i]) <= 0)
-			display_error_message(0, i + 1);
+			return (display_error_message(0, i + 1), 0);
 		i++;
 	}
+	return (1);
 }

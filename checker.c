@@ -28,7 +28,7 @@ int	is_dead(t_data *data)
 			pthread_mutex_lock(&data->endgame);
 			data->dead = 1;
 			pthread_mutex_unlock(&data->endgame);
-			display_message(&data->philo[i], i, RED, " dead");
+			display_log_message(&data->philo[i], i, RED, " dead");
 			return (0);
 		}
 		pthread_mutex_unlock(&data->last_eat_locker);
@@ -37,6 +37,7 @@ int	is_dead(t_data *data)
 	return (1);
 }
 
+// printf(CYAN"----Game ended! GG----\n"RESET_COLOR);
 int	check_eating_times(t_data *data)
 {
 	int	i;
@@ -52,7 +53,6 @@ int	check_eating_times(t_data *data)
 	}
 	if (sum >= (data->times_must_eat * data->philo_num))
 	{
-		printf(CYAN"----Game ended! GG----\n"RESET_COLOR);
 		pthread_mutex_lock(&data->endgame);
 		data->dead = 1;
 		pthread_mutex_unlock(&data->endgame);

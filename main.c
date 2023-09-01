@@ -12,36 +12,6 @@
 
 #include "philo.h"
 
-int	thread_join(t_data *data)
-{
-	int	i;
-
-	i = -1;
-	while (++i < data->philo_num)
-		pthread_join(data->philo[i].p_thread, NULL);
-	return (TRUE);
-}
-
-void	clear_all(t_data *data)
-{
-	int	i;
-
-	i = -1;
-	while (++i < data->philo_num)
-	{
-		pthread_mutex_destroy(&data->fork_locker[i]);
-	}
-	pthread_mutex_destroy(&data->last_eat_locker);
-	pthread_mutex_destroy(&data->endgame);
-	pthread_mutex_destroy(&data->print);
-	pthread_mutex_destroy(&data->eating_times_locker);
-	free(data->forks);
-	free(data->fork_locker);
-	free(data->philo);
-	free(data);
-	return ;
-}
-
 static int	init_data(t_data *data, char **argv, int argc, int philo_num)
 {
 	data->time_to_die = ft_atoi(argv[2]);
@@ -59,7 +29,7 @@ static int	init_data(t_data *data, char **argv, int argc, int philo_num)
 	if (!create_fork(data))
 		return (FALSE);
 	if (!create_philos(data))
-		return (FALSE);
+		return (destroy_free_fork(data), FALSE);
 	return (TRUE);
 }
 
@@ -70,19 +40,19 @@ int	main(int argc, char **argv)
 
 	if (argc == 5 || argc == 6)
 	{
-		validate_args(argv + 1, argc);
+		if (!validate_args(argv + 1))
+			return (0);
 		philo_num = ft_atoi(argv[1]);
 		data = malloc(sizeof(t_data));
 		if (!init_data(data, argv, argc, philo_num))
 		{
-			clear_all(data);
-			return (1);
+			destroy_mutexes(data);
+			return (free(data), 0);
 		}
 		if (create_thread(data) == FALSE)
 		{
 			thread_join(data);
-			clear_all(data);
-			return (1);
+			return (clear_all(data), 0);
 		}
 	}
 	return (0);

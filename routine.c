@@ -12,12 +12,38 @@
 
 #include "philo.h"
 
-void	display_message(t_philo *philo, int id, char *color, char *str)
+int	eating(t_philo *philo, t_philo *phil)
 {
-	pthread_mutex_lock(&philo->data->print);
-	printf("%s%lld ms Philo %d %s\n"RESET_COLOR, color,
-		get_time() - philo->data->start_time, id + 1, str);
-	pthread_mutex_unlock(&philo->data->print);
+	pthread_mutex_lock(&philo->data->endgame);
+	if (philo->data->dead)
+	{
+		pthread_mutex_unlock(&philo->data->endgame);
+		return (0);
+	}
+	pthread_mutex_unlock(&philo->data->endgame);
+	display_log_message(philo, phil->id, GREEN, "is eating😋");
+	pthread_mutex_lock(&philo->data->last_eat_locker);
+	phil->last_eat_time = get_time();
+	pthread_mutex_unlock(&philo->data->last_eat_locker);
+	pthread_mutex_lock(&philo->data->eating_times_locker);
+	phil->count_eating_times++;
+	pthread_mutex_unlock(&philo->data->eating_times_locker);
+	waiting_time(philo->data->time_to_eat);
+	return (1);
+}
+
+int	sleeping(t_philo *philo, t_philo phi)
+{
+	pthread_mutex_lock(&philo->data->endgame);
+	if (philo->data->dead)
+	{
+		pthread_mutex_unlock(&philo->data->endgame);
+		return (0);
+	}
+	pthread_mutex_unlock(&philo->data->endgame);
+	display_log_message(philo, phi.left, YELLOW, "is sleeping😴");
+	waiting_time(philo->data->time_to_sleep);
+	return (1);
 }
 
 int	pick_up_one_fork(t_philo *philo, t_philo phil)
@@ -35,7 +61,7 @@ int	pick_up_one_fork(t_philo *philo, t_philo phil)
 		{
 			pthread_mutex_lock(&philo->data->fork_locker[phil.left]);
 			philo->data->forks[phil.left] = 1;
-			display_message(philo, phil.left,
+			display_log_message(philo, phil.left,
 				RESET_COLOR, "has taken a fork");
 			pthread_mutex_unlock(&philo->data->fork_locker[phil.left]);
 			return (0);
@@ -55,9 +81,6 @@ void	*routine(void *phi)
 		pthread_mutex_unlock(&philo->data->endgame);
 		if (philo->data->philo_num == 1 
 			&& !pick_up_one_fork(philo, philo->data->philo[philo->id]))
-			return ((void *)1);
-		else if ((philo->id + 1) % 2 == 0 
-			&& !pick_up_even_fork(philo, philo->data->philo[philo->id]))
 			return ((void *)1);
 		else if (!pick_up_odd_fork(philo, philo->data->philo[philo->id]))
 			return ((void *)1);

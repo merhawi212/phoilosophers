@@ -12,7 +12,7 @@
 
 NAME	= philo
 
-M_SRCS	= main.c utils.c  philo.c   routine.c actions.c time_handler.c checker.c 
+M_SRCS	= main.c utils.c  philo.c   routine.c pickup_down_forks.c time_handler.c checker.c display_msg.c clear_free.c
 # M_OBJCS	= $(M_SRCS:.c=.o)
 
 CFLAG	=  -Wextra -Werror -Wall -pthread -g3 

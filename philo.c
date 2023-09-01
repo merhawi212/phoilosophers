@@ -16,12 +16,12 @@ int	create_fork(t_data *data)
 {
 	int	i;
 
-	data->fork_locker = malloc(sizeof(pthread_mutex_t) * data->philo_num);
+	data->fork_locker = malloc(sizeof(pthread_mutex_t) * (long) data->philo_num);
 	if (!data->fork_locker)
 		return (FALSE);
-	data->forks = malloc(sizeof(int) * data->philo_num);
+	data->forks = malloc(sizeof(int) * (long) data->philo_num);
 	if (!data->forks)
-		return (FALSE);
+		return (free(data->fork_locker), FALSE);
 	i = -1;
 	while (++i < data->philo_num)
 	{
