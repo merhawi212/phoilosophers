@@ -6,7 +6,7 @@
 /*   By: mkiflema <mkiflema@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 14:53:59 by mkiflema          #+#    #+#             */
-/*   Updated: 2023/09/02 14:54:02 by mkiflema         ###   ########.fr       */
+/*   Updated: 2023/09/02 23:03:16 by mkiflema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ int	create_philos(t_data *data)
 	long long	current_time;
 	int			i;
 
-	data->philo = malloc(sizeof(t_philo) * (data->philo_num + 1));
+	data->philo = malloc(sizeof(t_philo) * (data->philo_num));
 	if (!data->philo)
 		return (FALSE);
 	current_time = get_time();

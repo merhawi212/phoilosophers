@@ -6,7 +6,7 @@
 /*   By: mkiflema <mkiflema@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/03 15:56:39 by mkiflema          #+#    #+#             */
-/*   Updated: 2023/09/02 14:53:18 by mkiflema         ###   ########.fr       */
+/*   Updated: 2023/09/02 23:06:13 by mkiflema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,10 @@ int	is_dead(t_data *data)
 			pthread_mutex_lock(&data->endgame);
 			data->dead = 1;
 			pthread_mutex_unlock(&data->endgame);
-			display_log_message(&data->philo[i], i, RED, " dead");
+			pthread_mutex_lock(&data->print);
+			printf(RED"%lld ms Philo %d %s\n"RESET_COLOR,
+				get_time() - data->start_time, i + 1, " dead");
+			pthread_mutex_unlock(&data->print);
 			return (0);
 		}
 		pthread_mutex_unlock(&data->last_eat_locker);
@@ -37,7 +40,6 @@ int	is_dead(t_data *data)
 	return (1);
 }
 
-// printf(CYAN"----Game ended! GG----\n"RESET_COLOR);
 int	check_eating_times(t_data *data)
 {
 	int	i;
