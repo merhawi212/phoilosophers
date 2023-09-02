@@ -6,7 +6,7 @@
 /*   By: mkiflema <mkiflema@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/12 20:23:33 by mkiflema          #+#    #+#             */
-/*   Updated: 2023/08/31 21:48:34 by mkiflema         ###   ########.fr       */
+/*   Updated: 2023/09/02 13:19:31 by mkiflema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ int	sleeping(t_philo *philo, t_philo phi)
 
 int	pick_up_one_fork(t_philo *philo, t_philo phil)
 {
+	display_log_message(philo, phil.id, BLUE, "is thinking🤔");
 	while (1)
 	{
 		pthread_mutex_lock(&philo->data->endgame);

@@ -59,37 +59,35 @@ typedef struct s_data
 }		t_data;
 
 // utils.c
-void		display_error_message(int i, int arg);
 int			validate_args(char **argv);
 long		ft_atoi(char *str);
 
 // philo.c
+int			create_fork(t_data *data);
 int			create_philos(t_data *data);
 int			create_thread(t_data *data);
-int			create_fork(t_data *data);
 
 //routine
 void		*routine(void *philo);
 
 // pickup_down_forks.c
-int			pick_up_odd_fork(t_philo *philo, t_philo phi);
 int			pick_up_even_fork(t_philo *philo, t_philo phi);
-int			eating(t_philo *philo, t_philo *phil);
+int			pick_up_odd_fork(t_philo *philo, t_philo phi);
 int			put_down_fork(t_philo *philo, t_philo phi);
 
 //time_handler.c
 long long	get_time(void);
-int			is_dead(t_data *data);
 void		waiting_time(long long time);
 
 // checker.c
+int			is_dead(t_data *data);
 int			checker(t_data *data);
 int			is_someone_died(t_philo *philo);
 
 // clear_free.c
 int			thread_join(t_data *data);
-void 		destroy_mutexes(t_data *data);
-void 		destroy_free_fork(t_data *data);
+void		destroy_mutexes(t_data *data);
+void		destroy_free_fork(t_data *data);
 void		clear_all(t_data *data);
 
 // display_msg.c

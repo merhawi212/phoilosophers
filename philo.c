@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philo.c                                          :+:      :+:    :+:   */
+/*   philo.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mkiflema <mkiflema@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/12 19:36:01 by mkiflema          #+#    #+#             */
-/*   Updated: 2023/05/13 10:52:07 by mkiflema         ###   ########.fr       */
+/*   Created: 2023/09/02 14:53:59 by mkiflema          #+#    #+#             */
+/*   Updated: 2023/09/02 14:54:02 by mkiflema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,10 @@ int	create_fork(t_data *data)
 {
 	int	i;
 
-	data->fork_locker = malloc(sizeof(pthread_mutex_t) * (long) data->philo_num);
+	data->fork_locker = malloc(sizeof(pthread_mutex_t) * data->philo_num);
 	if (!data->fork_locker)
 		return (FALSE);
-	data->forks = malloc(sizeof(int) * (long) data->philo_num);
+	data->forks = malloc(sizeof(int) * data->philo_num);
 	if (!data->forks)
 		return (free(data->fork_locker), FALSE);
 	i = -1;
