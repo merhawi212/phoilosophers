@@ -35,7 +35,7 @@ int	is_dead(t_data *data)
 			return (0);
 		}
 		pthread_mutex_unlock(&data->last_eat_locker);
-		usleep(100);
+		// usleep(100);
 	}
 	return (1);
 }
@@ -72,7 +72,7 @@ int	checker(t_data *data)
 		if (data->times_must_eat >= 1)
 			if (!check_eating_times(data))
 				return (0);
-		usleep(500);
+		usleep(100);
 	}
 	return (0);
 }

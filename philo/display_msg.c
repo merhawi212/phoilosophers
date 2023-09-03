@@ -14,10 +14,12 @@
 
 void	display_log_message(t_philo *philo, int id, char *color, char *str)
 {
+	pthread_mutex_lock(&philo->data->print);
 	pthread_mutex_lock(&philo->data->endgame);
 	if (philo->data->dead)
 	{
 		pthread_mutex_unlock(&philo->data->endgame);
+		pthread_mutex_unlock(&philo->data->print);
 		return ;
 	}
 	pthread_mutex_unlock(&philo->data->endgame);

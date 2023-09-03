@@ -49,24 +49,22 @@ int	sleeping(t_philo *philo, t_philo phi)
 int	pick_up_one_fork(t_philo *philo, t_philo phil)
 {
 	display_log_message(philo, phil.id, BLUE, "is thinking🤔");
-	while (1)
+	pthread_mutex_lock(&philo->data->endgame);
+	if (philo->data->dead == 1)
 	{
-		pthread_mutex_lock(&philo->data->endgame);
-		if (philo->data->dead == 1)
-		{
-			pthread_mutex_unlock(&philo->data->endgame);
-			return (0);
-		}
 		pthread_mutex_unlock(&philo->data->endgame);
-		if (philo->data->forks[phil.left] == 0)
-		{
-			pthread_mutex_lock(&philo->data->fork_locker[phil.left]);
-			philo->data->forks[phil.left] = 1;
-			display_log_message(philo, phil.left,
-				RESET_COLOR, "has taken a fork");
-			pthread_mutex_unlock(&philo->data->fork_locker[phil.left]);
-			return (0);
-		}
+		return (0);
+	}
+	pthread_mutex_unlock(&philo->data->endgame);
+	if (philo->data->forks[phil.left] == 0)
+	{
+		pthread_mutex_lock(&philo->data->fork_locker[phil.left]);
+		philo->data->forks[phil.left] = phil.id;
+		display_log_message(philo, phil.left,
+			RESET_COLOR, "has taken a fork");
+		pthread_mutex_unlock(&philo->data->fork_locker[phil.left]);
+		waiting_time(philo->data->time_to_die);
+		return (0);
 	}
 	return (0);
 }
@@ -96,12 +94,3 @@ void	*routine(void *phi)
 	pthread_mutex_unlock(&philo->data->endgame);
 	return (NULL);
 }
-
-// if (philo->data->time_to_die < 60)
-// {
-// 	printf(RED"Error!\n Eating time should be at least 60 ms"RESET_COLOR);
-// 	pthread_mutex_lock(&philo->data->endgame);
-// 	philo->data->dead = 1;
-// 	pthread_mutex_unlock(&philo->data->endgame);
-// 	return ((void *)1);
-// }

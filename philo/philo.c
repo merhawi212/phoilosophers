@@ -69,7 +69,7 @@ int	create_thread(t_data *data)
 		}
 		else
 			return (FALSE);
-		usleep(100);
+		usleep(50);
 	}
 	if (!checker(data))
 		return (FALSE);

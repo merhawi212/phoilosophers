@@ -26,7 +26,7 @@ static void	even_fork_msg_logger(t_philo *philo, t_philo phi)
 
 int	pick_up_even_fork(t_philo *philo, t_philo phi)
 {
-	usleep(1500);
+	usleep(100);
 	pthread_mutex_lock(&philo->data->fork_locker[phi.right]);
 	pthread_mutex_lock(&philo->data->fork_locker[phi.left]);
 	while (philo->data->forks[phi.left] == -1 
