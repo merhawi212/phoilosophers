@@ -5,7 +5,7 @@ In the problem, a group of philosophers sits around a dining table and alternate
 
 
 
-Key Concepts:
+## Key Concepts:
 
 Concurrency: Philosophers represent concurrent entities, often implemented as threads, that need to access shared resources (forks) while avoiding conflicts and data races.
 
@@ -17,7 +17,7 @@ Greedy Philosopher Prevention: To prevent selfish behavior where a philosopher a
 
 
 
-##USAGE
+## USAGE
 
 `git clone `
 ```
