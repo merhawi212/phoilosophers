@@ -19,7 +19,9 @@ Greedy Philosopher Prevention: To prevent selfish behavior where a philosopher a
 
 ## USAGE
 
-`git clone `
+```
+git clone  https://github.com/MerKifle/phoilosophers.git
+```
 ```
 cd philo && make
 ```
