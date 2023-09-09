@@ -6,7 +6,7 @@
 /*   By: mkiflema <mkiflema@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/12 20:23:33 by mkiflema          #+#    #+#             */
-/*   Updated: 2023/09/02 13:19:31 by mkiflema         ###   ########.fr       */
+/*   Updated: 2023/09/09 20:23:56 by mkiflema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,8 @@ void	*routine(void *phi)
 	t_philo		*philo;
 
 	philo = (t_philo *)phi;
+	if ((philo->id + 1) % 2 == 0)
+		usleep(500);
 	pthread_mutex_lock(&philo->data->endgame);
 	while (philo->data->dead == 0)
 	{
@@ -81,7 +83,7 @@ void	*routine(void *phi)
 		if (philo->data->philo_num == 1 
 			&& !pick_up_one_fork(philo, philo->data->philo[philo->id]))
 			return ((void *)1);
-		else if (!pick_up_odd_fork(philo, philo->data->philo[philo->id]))
+		else if (!pick_up_multiple_forks(philo, philo->data->philo[philo->id]))
 			return ((void *)1);
 		if (!eating(philo, &philo->data->philo[philo->id]))
 			return ((void *)1);

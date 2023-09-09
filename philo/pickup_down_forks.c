@@ -6,7 +6,7 @@
 /*   By: mkiflema <mkiflema@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 13:21:04 by mkiflema          #+#    #+#             */
-/*   Updated: 2023/09/02 15:35:51 by mkiflema         ###   ########.fr       */
+/*   Updated: 2023/09/09 20:09:53 by mkiflema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,6 @@ static void	even_fork_msg_logger(t_philo *philo, t_philo phi)
 
 int	pick_up_even_fork(t_philo *philo, t_philo phi)
 {
-	usleep(100);
 	pthread_mutex_lock(&philo->data->fork_locker[phi.right]);
 	pthread_mutex_lock(&philo->data->fork_locker[phi.left]);
 	while (philo->data->forks[phi.left] == -1 
@@ -40,7 +39,7 @@ int	pick_up_even_fork(t_philo *philo, t_philo phi)
 		if (philo->data->dead)
 			return (pthread_mutex_unlock(&philo->data->endgame), 0);
 		pthread_mutex_unlock(&philo->data->endgame);
-		usleep(100);
+		usleep(1);
 		pthread_mutex_lock(&philo->data->fork_locker[phi.right]);
 		pthread_mutex_lock(&philo->data->fork_locker[phi.left]);
 	}
@@ -60,7 +59,7 @@ static void	odd_forks_msg_logger(t_philo *philo, t_philo phi)
 	pthread_mutex_unlock(&philo->data->fork_locker[phi.right]);
 }
 
-int	pick_up_odd_fork(t_philo *philo, t_philo phi)
+int	pick_up_multiple_forks(t_philo *philo, t_philo phi)
 {
 	display_log_message(philo, phi.id, BLUE, "is thinking🤔");
 	if ((phi.id + 1) % 2 == 0)
@@ -82,7 +81,7 @@ int	pick_up_odd_fork(t_philo *philo, t_philo phi)
 		if (philo->data->dead)
 			return (pthread_mutex_unlock(&philo->data->endgame), 0);
 		pthread_mutex_unlock(&philo->data->endgame);
-		usleep(200);
+		usleep(1);
 		pthread_mutex_lock(&philo->data->fork_locker[phi.left]);
 		pthread_mutex_lock(&philo->data->fork_locker[phi.right]);
 	}

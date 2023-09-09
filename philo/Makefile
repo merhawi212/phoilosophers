@@ -6,7 +6,7 @@
 #    By: mkiflema <mkiflema@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/05/12 20:32:15 by mkiflema          #+#    #+#              #
-#    Updated: 2023/09/02 23:02:39 by mkiflema         ###   ########.fr        #
+#    Updated: 2023/09/09 12:29:46 by mkiflema         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,21 +21,27 @@ lthread = -pthread
 CC		= cc
 RM		= rm -rf
 
-M_OBJS = $(M_SRCS:.c=.o)
+
+BUILD_DIR = ./build
+
+M_OBJS = $(addprefix $(BUILD_DIR)/, $(M_SRCS:.c=.o))
 
 all: $(NAME)
 
-$(NAME): $(M_OBJS)
+$(NAME): $(BUILD_DIR) $(M_OBJS)
 	$(CC) $(CFLAGS) $(lthread) $(M_SRCS) -o $(NAME)
 
-%.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+$(BUILD_DIR):
+	mkdir  -p $(BUILD_DIR)
 
+$(BUILD_DIR)/%.o: %.c 
+	$(CC) $(CFLAGS) -c $< -o $@
+	
 clean:
-	$(RM) $(M_OBJS)
+	$(RM) $(BUILD_DIR)
 
 fclean: clean
 	$(RM) $(NAME)
 
-re: fclean all
+re: fclean  all
 

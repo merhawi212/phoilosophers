@@ -6,7 +6,7 @@
 /*   By: mkiflema <mkiflema@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 14:53:59 by mkiflema          #+#    #+#             */
-/*   Updated: 2023/09/02 23:03:16 by mkiflema         ###   ########.fr       */
+/*   Updated: 2023/09/09 20:10:17 by mkiflema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ int	create_thread(t_data *data)
 		}
 		else
 			return (FALSE);
-		usleep(50);
+		usleep(1);
 	}
 	if (!checker(data))
 		return (FALSE);

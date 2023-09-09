@@ -72,7 +72,7 @@ void		*routine(void *philo);
 
 // pickup_down_forks.c
 int			pick_up_even_fork(t_philo *philo, t_philo phi);
-int			pick_up_odd_fork(t_philo *philo, t_philo phi);
+int			pick_up_multiple_forks(t_philo *philo, t_philo phi);
 int			put_down_fork(t_philo *philo, t_philo phi);
 
 //time_handler.c

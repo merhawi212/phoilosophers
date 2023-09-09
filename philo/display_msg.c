@@ -6,7 +6,7 @@
 /*   By: mkiflema <mkiflema@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 13:37:05 by mkiflema          #+#    #+#             */
-/*   Updated: 2023/09/02 23:07:45 by mkiflema         ###   ########.fr       */
+/*   Updated: 2023/09/09 14:02:29 by mkiflema         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ void	display_log_message(t_philo *philo, int id, char *color, char *str)
 		return ;
 	}
 	pthread_mutex_unlock(&philo->data->endgame);
-	printf("%s%lld ms Philo %d %s\n"RESET_COLOR, color,
+	printf("⏰ %s%lld ms Philo %d %s\n"RESET_COLOR, color,
 		get_time() - philo->data->start_time, id + 1, str);
 	pthread_mutex_unlock(&philo->data->print);
 }
