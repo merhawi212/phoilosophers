@@ -1,5 +1,5 @@
 # About Project
-Philosophers(Philo), often refer to a classic synchronization problem known as the "Dining Philosophers Problem.". This solves the complexities of resource allocation and concurrency control in multi-threaded.
+Philosophers(Philo), often refer to a classic synchronization problem known as the "Dining Philosophers Problem.". This solves the complexities of resource allocation and concurrency control in computer processes or multi-threaded.
 
 In the problem, a group of philosophers sits around a dining table and alternates between three actions: thinking, eating, and sleeping. Each philosopher needs two forks to eat, one for each hand, and the forks are considered shared resources. Every Philo had time to eat, sleep, and die. 
 
@@ -7,7 +7,7 @@ In the problem, a group of philosophers sits around a dining table and alternate
 
 ## Key Concepts:
 
-**Concurrency:** Philosophers represent concurrent entities, often implemented as threads, that need to access shared resources (forks) while avoiding conflicts and data races.
+**Concurrency:** Philosophers represent concurrent entities, often implemented as processes (threads in this case), that need to access shared resources (forks) while avoiding conflicts, starvation or death, and data races.
 
 **Mutex:** Mutexes protect shared resources, like forks, ensuring that only one philosopher can access a resource at a time. This prevents data races and maintains synchronization.
 
